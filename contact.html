@@ -23,6 +23,7 @@
    <link rel="stylesheet" href="css/style.css">
    <link rel="stylesheet" href="css/responsive.css">
    <link rel="stylesheet" type="text/css" href="revolution/rs6.css">
+
 </head>
 
 <body>
@@ -299,30 +300,29 @@
                               Illustration, Motion Design.</div>
                         </div>
                         <div class="contact-form contact-form-style-3">
-                           <form method="post" id="contact-form"
-                              action="https://digiwize-demo.pbminfotech.com/html-demo/send.php">
+                           <form id="contact-form">
                               <div class="row">
                                  <div class="col-md-12">
                                     <p>
-                                       <input type="text" class="form-control" placeholder="Name" name="your-name"
-                                          required>
+                                       <input type="text" class="form-control" id="name" placeholder="Name"
+                                          name="your-name" required>
                                     </p>
                                  </div>
                                  <div class="col-md-12">
                                     <P>
-                                       <input type="email" class="form-control" placeholder="Email" name="your-email"
-                                          required>
+                                       <input type="email" class="form-control" id="email" placeholder="Email"
+                                          name="your-email" required>
                                     </P>
                                  </div>
                                  <div class="col-md-12">
                                     <p>
-                                       <input type="text" class="form-control" placeholder="Subject" name="your-subject"
-                                          required>
+                                       <input type="text" class="form-control" id="subject" placeholder="Subject"
+                                          name="your-subject" required>
                                     </p>
                                  </div>
                                  <div class="col-lg-12">
                                     <p>
-                                       <textarea name="message" class="form-control" placeholder="Message"
+                                       <textarea name="message" class="form-control" id="message" placeholder="Message"
                                           required></textarea>
                                     </p>
                                  </div>
@@ -426,7 +426,6 @@
          <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"></path>
       </svg>
    </div>
-   <script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
    <script src="js/jquery.min.js"></script>
    <script src="js/popper.min.js"></script>
    <script src="js/bootstrap.min.js"></script>
@@ -446,12 +445,74 @@
    <script src='js/gsap-animation.js'></script>
    <script src="js/jquery-validate/jquery.validate.min.js"></script>
    <script src="js/scripts.js"></script>
-   <script>(function () { var js = "window['__CF$cv$params']={r:'82237dee481a5fe5',t:'MTY5OTMzODI1Mi43NjYwMDA='};_cpo=document.createElement('script');_cpo.nonce='',_cpo.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js',document.getElementsByTagName('head')[0].appendChild(_cpo);"; var _0xh = document.createElement('iframe'); _0xh.height = 1; _0xh.width = 1; _0xh.style.position = 'absolute'; _0xh.style.top = 0; _0xh.style.left = 0; _0xh.style.border = 'none'; _0xh.style.visibility = 'hidden'; document.body.appendChild(_0xh); function handler() { var _0xi = _0xh.contentDocument || _0xh.contentWindow.document; if (_0xi) { var _0xj = _0xi.createElement('script'); _0xj.innerHTML = js; _0xi.getElementsByTagName('head')[0].appendChild(_0xj); } } if (document.readyState !== 'loading') { handler(); } else if (window.addEventListener) { document.addEventListener('DOMContentLoaded', handler); } else { var prev = document.onreadystatechange || function () { }; document.onreadystatechange = function (e) { prev(e); if (document.readyState !== 'loading') { document.onreadystatechange = prev; handler(); } }; } })();</script>
-   <script defer
-      src="https://static.cloudflareinsights.com/beacon.min.js/v84a3a4012de94ce1a686ba8c167c359c1696973893317"
-      integrity="sha512-euoFGowhlaLqXsPWQ48qSkBSCFs3DPRyiwVu3FjR96cMPx+Fr+gpWRhIafcHwqwCqWS42RZhIudOvEI+Ckf6MA=="
-      data-cf-beacon='{"rayId":"82237dee481a5fe5","r":1,"version":"2023.10.0","token":"125856bf84ab44059737e93b01aa0fef"}'
-      crossorigin="anonymous"></script>
+   <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
+      import { getDatabase, ref, push } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js';
+
+      // Your Firebase Config
+      const firebaseConfig = {
+         apiKey: "AIzaSyDlJgwTVzA_Jd8Oc_lp283x1djlYPCqSoY",
+         authDomain: "dlswebsite-d2f6b.firebaseapp.com",
+         projectId: "dlswebsite-d2f6b",
+         storageBucket: "dlswebsite-d2f6b.appspot.com",
+         messagingSenderId: "539797998290",
+         appId: "1:539797998290:web:bdc2fbdd6fb49eff0cbb0b",
+         measurementId: "G-VP5NBK86VM"
+      };
+
+      // Initialize Firebase
+      const firebaseApp = initializeApp(firebaseConfig);
+      const database = getDatabase(firebaseApp);
+
+      function submitForm() {
+         var name = document.getElementById('name').value;
+         var email = document.getElementById('email').value;
+         var subject = document.getElementById('subject').value;
+         var message = document.getElementById('message').value;
+
+         // Get a reference to the 'contacts' node
+         const contactsRef = ref(database, 'leads');
+
+         // Push data to Firebase
+         push(contactsRef, {
+            name: name,
+            email: email,
+            subject: subject,
+            message: message,
+            datetime: Date.now()
+         });
+
+         // Clear the form
+         document.getElementById('contact-form').reset();
+
+         // alert('Form submitted successfully!');
+      }
+
+      document.getElementById('contact-form').addEventListener('submit', e => {
+         e.preventDefault();
+         if ($("#contact-form").valid()) {
+            $(".contact-form .message-status").html('');
+            $('.form-btn-loader').removeClass('d-none');
+            $('.contact-form button.pbmit-btn span').hide();
+            $('.contact-form button.pbmit-btn').attr("disabled", "disabled");
+
+            submitForm()
+
+            setTimeout(() => {
+               $('.form-btn-loader').addClass('d-none');
+               $('.contact-form button.pbmit-btn span').show();
+               $(".contact-form button.pbmit-btn").removeAttr("disabled");
+               $(".contact-form .message-status").html('Message sent');
+            }, 2000);
+
+
+            setTimeout(() => {
+               $(".contact-form .message-status").html('')
+            }, 5000);
+
+         }
+      })
+   </script>
 </body>
 
 </html>
